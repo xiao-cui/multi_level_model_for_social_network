@@ -1,0 +1,5 @@
+library(igraph)
+sample.profile<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_01", head=F, sep=",")
+colnames(sample.profile)<-c("uid","province","gender","followers_count","friends_count","bilaterals_count", "statuses_count","comments_count","reposts_count","likes_count","verified_type","weibo_age")
+sample.graph<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_graph_01", head=F, sep=" ")
+colnames(sample.graph)<-c("from","to")
