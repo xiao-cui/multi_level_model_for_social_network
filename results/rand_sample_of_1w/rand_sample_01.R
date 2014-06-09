@@ -31,26 +31,22 @@ V(ug)$size<-degree(ug)
 par(mar=c(0,0,0,0))
 V(ug)$color=V(ug)$verified_type
 V(ug)$color=gsub("Unverified Account", "blue", V(ug)$color)
-V(ug)$color=gsub("DaRen|Application Software|Campus|Corporate Account|Government|Media|Organization|Personal Account|Website|Weibo Lady|8", "red", V(ug)$color)
+V(ug)$color=gsub("DaRen", "red", V(ug)$color)
+V(ug)$color=gsub("Application Software|Campus|Corporate Account|Government|Media|Organization|Personal Account|Website|Weibo Lady|8", "goldenrod1", V(ug)$color)
+
 plot(ug, vertex.label=NA, edge.arrow.mode=0)
 
 #retrieve articuation points
 cutpoint_ids=articulation.points(ug)
-V(ug)[cutpoint_ids]$color="darkorchid"
+V(ug)[cutpoint_ids]$color="deeppink1"
 
 #construct 1 abstraction
-V(ug)$size=1
-E(ug)$count=1
-comm.graph<-contract.vertices(ug, mc$membership, vertex.attr.comb=list(size="sum","ignore"))
+V(undirected.g)$size=1
+E(undirected.g)$count=1
+comm.graph<-contract.vertices(undirected.g, mc$membership, vertex.attr.comb=list(size="sum","ignore"))
 comm.graph<-simplify(comm.graph, remove.loops=TRUE, edge.attr.comb=list(count="sum","ignore"))
 V(comm.graph)$size<-V(comm.graph)$size/10
 plot(comm.graph, vertex.label=NA, edge.arrow.mode=0)
-
-#retrieve articuation points
-cutpoint_ids=articulation.points(comm.graph)
-V(comm.graph)[cutpoint_ids]$color="darkorchid"
-plot(comm.graph, vertex.label=NA, edge.arrow.mode=0)
-
 
 
 
