@@ -1,9 +1,9 @@
 library(igraph)
 #attach users' information to vertices
-sample.profile<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_01", head=F, sep=",")
+sample.profile<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_01", header=F, sep=",", fileEncoding="UTF-8")
 colnames(sample.profile)<-c("uid","province","gender","followers_count","friends_count","bilaterals_count", "statuses_count","comments_count","reposts_count","likes_count","verified_type","weibo_age")
 #construct a network based on users' connections
-sample.graph<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_graph_01", head=F, sep=" ")
+sample.graph<-read.csv("/Users/quyao/experiment/rand_sample_of_1w/rand_sample_graph_01", header=F, sep=" ", fileEncoding="UTF-8")
 colnames(sample.graph)<-c("from","to")
 #construct a social graph where nodes represent users
 g<-graph.data.frame(sample.graph, vertices=sample.profile)
@@ -93,8 +93,6 @@ plot(comm.comm.graph, vertex.label=NA, edge.arrow.mode=0)
 cutpoint_ids=articulation.points(comm.comm.graph)
 V(comm.comm.graph)[cutpoint_ids]$color="deeppink1"
 plot(comm.comm.graph, vertex.label=NA, edge.arrow.mode=0)
-\
-
 
 
 
