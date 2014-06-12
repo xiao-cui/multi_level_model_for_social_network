@@ -7,7 +7,6 @@
 #"likes_count","verified_type","weibo_age"
 as.weighted<-function(x,w1,w2,w3,w4,w5,w6){
     num_of_edges<-ecount(x)
-    fileConn<-file("X:\\experiment\\rand_sample_of_1w\\rand_sample_weighted_graph_01")
     for (i in 1:num_of_edges) {
     dist_followers_count=abs(V(x)[get.edge(x, i)[1]]$followers_count - V(x)[get.edge(x, i)[2]]$followers_count)
     dist_friends_count=abs(V(x)[get.edge(x, i)[1]]$friends_count - V(x)[get.edge(x, i)[2]]$friends_count)
@@ -16,9 +15,9 @@ as.weighted<-function(x,w1,w2,w3,w4,w5,w6){
     dist_comments_count=abs(V(x)[get.edge(x, i)[1]]$comments_count - V(x)[get.edge(x, i)[2]]$comments_count)
     dist_reposts_count=abs(V(x)[get.edge(x, i)[1]]$reposts_count - V(x)[get.edge(x, i)[2]]$reposts_count)
     similarity=w1*dist_followers_count+w2*dist_friends_count+w3*dist_bilaterals_count+w4*dist_statuses_count+w5*dist_comments_count+w6*dist_reposts_count
-    writeLines(c(get.edge(x,i)[1],get.edge(x,i)[2],as.character(similarity)), fileConn, sep=" ")
+    
+    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file="ransample_weighted_graph_01", ncolumns=3, append=TRUE)
     }
-    close(fileConn)
 }
 
 #min-max normalization
