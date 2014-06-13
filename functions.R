@@ -1,23 +1,35 @@
-#variable g is an igraph object where nodes represent users edges represent connections among users
+#variable x is an igraph object where nodes represent users edges represent connections among users
 #users' profiles attached to nodes in the form of attributes.
 #attributes include:
 #"uid","province","gender",
 #"followers_count","friends_count","bilaterals_count", 
 #"statuses_count","comments_count","reposts_count",
 #"likes_count","verified_type","weibo_age"
-as.weighted<-function(x,w1,w2,w3,w4,w5,w6){
-    num_of_edges<-ecount(x)
+assign.weight<-function(x,w1,w2,w3,w4,w5,w6){
+    #w1, w2, w3, w4, w5, w6 are coefficients of 
+    #"followers_count","friends_count","bilaterals_count",
+    #"statuses_count","comments_count","reposts_count" respectively
+    num_of_edges<-ecount(x)   
+    
     for (i in 1:num_of_edges) {
+    
     dist_followers_count=abs(V(x)[get.edge(x, i)[1]]$followers_count - V(x)[get.edge(x, i)[2]]$followers_count)
     dist_friends_count=abs(V(x)[get.edge(x, i)[1]]$friends_count - V(x)[get.edge(x, i)[2]]$friends_count)
     dist_bilaterals_count=abs(V(x)[get.edge(x, i)[1]]$bilaterals_count - V(x)[get.edge(x, i)[2]]$bilaterals_count)
     dist_statuses_count=abs(V(x)[get.edge(x, i)[1]]$statuses_count - V(x)[get.edge(x, i)[2]]$statuses_count)
     dist_comments_count=abs(V(x)[get.edge(x, i)[1]]$comments_count - V(x)[get.edge(x, i)[2]]$comments_count)
     dist_reposts_count=abs(V(x)[get.edge(x, i)[1]]$reposts_count - V(x)[get.edge(x, i)[2]]$reposts_count)
+    
+    #assign weight
     similarity=w1*dist_followers_count+w2*dist_friends_count+w3*dist_bilaterals_count+w4*dist_statuses_count+w5*dist_comments_count+w6*dist_reposts_count
     
-    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file="X:\\experiment\\rand_sample_of_1w\\rand_sample_weighted_graph_01", ncolumns=3, append=TRUE)
+    #write edges with their weight line by line
+    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file=tclvalue(tkgetOpenFile()), ncolumns=3, append=TRUE)
+    
     }
+    
+    #end for-loop
+    #a new file created, instead of original edgelist file, new file contains weighting information as well
 }
 
 #min-max normalization
@@ -49,11 +61,9 @@ rescaling<-function(x){
 
 #graph pruning (biggest undirected component)
 #x is an igraph object as described above
-big.undirected.comp<-function(x){
-  
+biggest.undirected.comp<-function(x){
   #conver to undirected graph
   ug<-as.undirected(x, mode="mutual")
-  
   #retrieve the biggest connected component
   clts<-clusters(ug)
   comps<-clts$membership
@@ -61,7 +71,6 @@ big.undirected.comp<-function(x){
   bad.vs<-V(ug)[comps!=big_comp_id]
   good.vs<-delete.vertices(ug, bad.vs)
   ug<-good.vs
-  
   #return a weighted undirected component that is the biggest component of the original graph
   return (ug)
 }
@@ -82,12 +91,10 @@ plot.multilevel.communities<-function(x){
 
 #plot communities based on walktrap algorithm
 #x is an igraph object, must be a weighted directed graph
-plot.communities<-function(x){
+plot.colored.communities<-function(x){
   wc<-walktrap.community(x, weights=E(x)$weight)
-  com<-community.to.membership(x, wc$merges, steps=which.max(wc$modularity)-1)
-  V(x)$color<-com$membership+1
+  colbar<-rainbow(length(wc))
   x$layout<-layout.fruchterman.reingold
-  V(x)$size<-degree(x)
-  par(mar=c(0,0,0,0))
-  plot(x, vertex.label=NA, edge.arrow.mode=0)
+  V(x)$size<-degree(x)/10
+  plot(wc, x, col=colbar[membership(wc)], mark.groups=communities(wc), edge.color=c("black", "red")[crossing(wc,x)+1], vertex.label=NA, edge.arrow.mode=0)
 }
