@@ -16,7 +16,7 @@ as.weighted<-function(x,w1,w2,w3,w4,w5,w6){
     dist_reposts_count=abs(V(x)[get.edge(x, i)[1]]$reposts_count - V(x)[get.edge(x, i)[2]]$reposts_count)
     similarity=w1*dist_followers_count+w2*dist_friends_count+w3*dist_bilaterals_count+w4*dist_statuses_count+w5*dist_comments_count+w6*dist_reposts_count
     
-    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file="ransample_weighted_graph_01", ncolumns=3, append=TRUE)
+    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file="X:\\experiment\\rand_sample_of_1w\\rand_sample_weighted_graph_01", ncolumns=3, append=TRUE)
     }
 }
 
@@ -45,4 +45,49 @@ rescaling<-function(x){
         V(x)[i]$reposts_count<-(V(x)[i]$reposts_count-lower_bound.reposts_count)/(upper_bound.reposts_count-lower_bound.reposts_count)
     }
     return (x)
+}
+
+#graph pruning (biggest undirected component)
+#x is an igraph object as described above
+big.undirected.comp<-function(x){
+  
+  #conver to undirected graph
+  ug<-as.undirected(x, mode="mutual")
+  
+  #retrieve the biggest connected component
+  clts<-clusters(ug)
+  comps<-clts$membership
+  big_comp_id<-which.max(clts$csize)
+  bad.vs<-V(ug)[comps!=big_comp_id]
+  good.vs<-delete.vertices(ug, bad.vs)
+  ug<-good.vs
+  
+  #return a weighted undirected component that is the biggest component of the original graph
+  return (ug)
+}
+
+#plot communities based on multi-level community detection
+#x is an igraph object, must be an undirected graph
+plot.multilevel.communities<-function(x){
+  mc<-multilevel.community(ug)
+  ug$layout<-layout.fruchterman.reingold
+  V(ug)$size<-degree(ug)
+  par(mar=c(0,0,0,0))
+  V(ug)$color=V(ug)$verified_type
+  V(ug)$color=gsub("Unverified Account", "blue", V(ug)$color)
+  V(ug)$color=gsub("DaRen", "red", V(ug)$color)
+  V(ug)$color=gsub("Application Software|Campus|Corporate Account|Government|Media|Organization|Personal Account|Website|Weibo Lady|8", "goldenrod1", V(ug)$color)
+  plot(ug, vertex.label=NA, edge.arrow.mode=0)
+}
+
+#plot communities based on walktrap algorithm
+#x is an igraph object, must be a weighted directed graph
+plot.communities<-function(x){
+  wc<-walktrap.community(x, weights=E(x)$weight)
+  com<-community.to.membership(x, wc$merges, steps=which.max(wc$modularity)-1)
+  V(x)$color<-com$membership+1
+  x$layout<-layout.fruchterman.reingold
+  V(x)$size<-degree(x)
+  par(mar=c(0,0,0,0))
+  plot(x, vertex.label=NA, edge.arrow.mode=0)
 }

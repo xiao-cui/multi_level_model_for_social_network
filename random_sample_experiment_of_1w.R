@@ -16,7 +16,13 @@ g<-graph.data.frame(sample.graph, vertices=sample.profile)
 rg<-rescaling(g)
 #construct a social graph where edges are weighted
 as.weighted(rg,w1=1,w2=1,w3=1,w4=1,w5=1,w6=10)
-
+weighted.graph<-read.csv("X:\\experiment\\rand_sample_of_1w\\rand_sample_weighted_graph_01", header=F, sep=" ", fileEncoding="UTF-8")
+colnames(weighted.graph)<-c("from","to","weight")
+wg<-graph.data.frame(weighted.graph, vertices=sample.profile)
+ug<-big.undirected.comp(wg)
+#plot communities
+#wg (i.e. weighted directed graph) used, rather than of ug (emphasize the forms of communities rather than the distribution of individuals' attributes)
+plot.communities(wg)
 #                                                                                                                 #
 #                                                                                                                 #
 #                                                                                                                 #
