@@ -26,12 +26,5 @@ i<-which.max(sapply(connected.comp.list, vcount))
 comp<-connected.comp.list[[i]]
 plot.colored.communities(comp)
 
-
-
-
-
-
-
-
 #construct undirected graph
 undirected.g<-biggest.undirected.comp(weighted.g)
