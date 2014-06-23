@@ -6,6 +6,10 @@
 #"statuses_count","comments_count","reposts_count",
 #"likes_count","verified_type","weibo_age"
 assign.weight<-function(x,w1,w2,w3,w4,w5,w6){
+  
+    #
+    writeTo<-tclvalue(tkgetOpenFile())
+  
     #w1, w2, w3, w4, w5, w6 are coefficients of 
     #"followers_count","friends_count","bilaterals_count",
     #"statuses_count","comments_count","reposts_count" respectively
@@ -24,7 +28,7 @@ assign.weight<-function(x,w1,w2,w3,w4,w5,w6){
     similarity=w1*dist_followers_count+w2*dist_friends_count+w3*dist_bilaterals_count+w4*dist_statuses_count+w5*dist_comments_count+w6*dist_reposts_count
     
     #write edges with their weight line by line
-    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file=tclvalue(tkgetOpenFile()), ncolumns=3, append=TRUE)
+    write(c(V(x)[get.edge(x, i)[1]]$name,V(x)[get.edge(x, i)[2]]$name,as.character(similarity)), file=writeTo, ncolumns=3, append=TRUE)
     
     }
     
@@ -94,7 +98,7 @@ plot.multilevel.communities<-function(x){
 plot.colored.communities<-function(x){
   wc<-walktrap.community(x, weights=E(x)$weight)
   colbar<-rainbow(length(wc))
-  x$layout<-layout.fruchterman.reingold
-  V(x)$size<-degree(x)/10
+  x$layout<-layout.lgl(x, area=10*vcount(x)^2)
+  V(x)$size<-2
   plot(wc, x, col=colbar[membership(wc)], mark.groups=communities(wc), edge.color=c("black", "red")[crossing(wc,x)+1], vertex.label=NA, edge.arrow.mode=0)
 }
