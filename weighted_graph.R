@@ -46,6 +46,16 @@ dev.off()
 #construct undirected graph
 ug<-biggest.undirected.comp(comp)
 
+#plot ROOT level
+png("X:\\experiment\\multi_level_model_for_social_network\\result\\rand_sample_01\\communities_by_followers_new.png", type="cairo", units="in", width=10, height=10, res=300)
+mc<-multilevel.community(ug, weights=E(ug)$weight)
+colbar<-rainbow(length(mc))
+lay<-layout.fruchterman.reingold(ug, niter=1000)
+V(ug)$size<-2
+par(mar=c(0,0,0,0))
+plot(mc, ug, layout=lay, col=colbar[membership(mc)], mark.groups=communities(mc), edge.color=c("black", "red")[crossing(mc,ug)+1], vertex.label=NA, edge.arrow.mode=0)
+dev.off()
+
 #construct 1 abstraction
 mc<-multilevel.community(ug)
 V(ug)$size=1

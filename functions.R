@@ -102,3 +102,13 @@ plot.colored.communities<-function(x){
   V(x)$size<-2
   plot(wc, x, col=colbar[membership(wc)], mark.groups=communities(wc), edge.color=c("black", "red")[crossing(wc,x)+1], vertex.label=NA, edge.arrow.mode=0)
 }
+
+#plot communities based on multi-level algorithm
+#x is an igraph object, must be a weighted but undirected graph
+plot.root.level<-function(x){
+  mc<-multilevel.community(x, weights=E(x)$weight)
+  colbar<-rainbow(length(mc))
+  x$layout<-layout.lgl(x, area=vcount(x)^10)
+  V(x)$size<-2
+  plot(mc, x, col=colbar[membership(mc)], mark.groups=communities(mc), edge.color=c("black", "red")[crossing(mc,x)+1], vertex.label=NA, edge.arrow.mode=0)
+}
